@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteador de Cores</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            transition: background-color 0.5s ease-in-out;
+            cursor: pointer;
+            overflow: hidden; /* Garante que não haja barras de rolagem */
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 8em; /* Tamanho grande para o título */
+            user-select: none; /* Impede seleção de texto */
+            pointer-events: none; /* Permite que o clique no body funcione */
+        }
+
+        /* Classes para as cores */
+        body.vermelho { background-color: #FF0000; }
+        body.azul { background-color: #0000FF; }
+        body.amarelo { background-color: #FFFF00; }
+    </style>
+</head>
+<body>
+    <h1 id="tituloCor">CLIQUE PARA SORTEAR</h1>
+
+    <script>
+        const body = document.body;
+        const tituloCor = document.getElementById('tituloCor');
+        const cores = ['vermelho', 'azul', 'amarelo'];
+
+        body.addEventListener('click', () => {
+            // Remove todas as classes de cor existentes
+            cores.forEach(cor => body.classList.remove(cor));
+
+            // Sorteia uma nova cor
+            const corSorteada = cores[Math.floor(Math.random() * cores.length)];
+
+            // Adiciona a classe da cor sorteada
+            body.classList.add(corSorteada);
+
+            // Atualiza o texto do título (opcional, pode remover se quiser só a cor)
+            if (corSorteada === 'vermelho') {
+                tituloCor.textContent = 'VERMELHO';
+                tituloCor.style.color = 'white'; // Mantém o texto branco para contraste
+            } else if (corSorteada === 'azul') {
+                tituloCor.textContent = 'AZUL';
+                tituloCor.style.color = 'white'; // Mantém o texto branco para contraste
+            } else {
+                tituloCor.textContent = 'AMARELO';
+                tituloCor.style.color = 'black'; // Muda para preto para contraste no amarelo
+            }
+        });
+    </script>
+</body>
+</html>
