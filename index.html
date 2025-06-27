@@ -3,170 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roleta de Cores</title>
+    <title>Roleta Rápida</title>
     <style>
+        :root {
+            --tamanho-roleta: 90vmin; /* Define o tamanho da roleta com base na menor dimensão da tela */
+            --duracao-giro: 1.5s; /* Animação bem rápida (1.5 segundos) */
+            --cor-vermelha: #E74C3C;
+            --cor-amarela: #F1C40F;
+            --cor-azul: #3498DB;
+        }
+
         body {
+            margin: 0;
             display: flex;
-            flex-direction: column; /* Para centralizar o texto e a roleta */
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            background-color: #2c3e50; /* Cor inicial de fundo */
             font-family: sans-serif;
-            transition: background-color 0.8s ease-in-out; /* Transição mais suave para a cor de fundo */
+            color: white;
+            transition: background-color 0.5s ease; /* Transição suave para a cor de fundo */
             overflow: hidden;
-            background-color: #333; /* Cor de fundo inicial */
         }
 
-        #roleta-container {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
+        .container-roleta {
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            overflow: hidden; /* Garante que os "fatias" fiquem dentro do círculo */
+            cursor: pointer;
+            user-select: none; /* Impede a seleção de texto ao clicar */
         }
-
-        .fatia {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%); /* Um semicírculo para cada cor */
-            transform-origin: 50% 50%;
+        
+        .roleta {
+            width: var(--tamanho-roleta);
+            height: var(--tamanho-roleta);
+            border-radius: 50%;
+            /* Cria as 3 fatias de cores */
+            background: conic-gradient(
+                var(--cor-vermelha) 0deg 120deg,
+                var(--cor-amarela) 120deg 240deg,
+                var(--cor-azul) 240deg 360deg
+            );
+            border: calc(var(--tamanho-roleta) * 0.03) solid white; /* Borda branca responsiva */
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            transition: transform var(--duracao-giro) cubic-bezier(0.25, 1, 0.5, 1); /* Curva de animação para um final suave */
         }
-
-        .fatia.vermelho { background-color: #FF0000; transform: rotate(0deg); }
-        .fatia.azul { background-color: #0000FF; transform: rotate(120deg); }
-        .fatia.amarelo { background-color: #FFFF00; transform: rotate(240deg); }
-
-        #ponteiro {
+        
+        .ponteiro {
             width: 0;
             height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 40px solid #000; /* Triângulo preto para o ponteiro */
+            border-left: calc(var(--tamanho-roleta) * 0.04) solid transparent;
+            border-right: calc(var(--tamanho-roleta) * 0.04) solid transparent;
+            border-top: calc(var(--tamanho-roleta) * 0.1) solid white;
             position: absolute;
-            top: -25px; /* Ajusta a posição para cima */
-            z-index: 10;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -150%); /* Posiciona o ponteiro apontando para baixo */
+            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.3));
         }
 
-        #roleta-circulo-interno {
-            width: 50px; /* Círculo central */
-            height: 50px;
-            background-color: #fff;
+        /* Círculo central para acabamento */
+        .container-roleta::after {
+            content: '';
+            position: absolute;
+            width: calc(var(--tamanho-roleta) * 0.1);
+            height: calc(var(--tamanho-roleta) * 0.1);
+            background: white;
             border-radius: 50%;
-            position: absolute;
-            z-index: 5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            color: #333;
-            font-size: 0.8em;
-            text-align: center;
-            cursor: pointer; /* Indica que é clicável */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
-
-        #roleta-container.girando {
-            animation: girarRoleta 3s forwards ease-out; /* Animação de rotação */
-        }
-
-        @keyframes girarRoleta {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(3600deg); /* 10 voltas completas */ }
-        }
-
-        h1#resultado-cor {
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-size: 4em;
-            margin-top: 50px;
-            text-align: center;
-        }
-
-        /* Classes para a cor de fundo da página */
-        body.vermelho-bg { background-color: #FF0000; }
-        body.azul-bg { background-color: #0000FF; }
-        body.amarelo-bg { background-color: #FFFF00; }
     </style>
 </head>
 <body>
-    <div id="roleta-container">
-        <div class="fatia vermelho"></div>
-        <div class="fatia azul"></div>
-        <div class="fatia amarelo"></div>
-        <div id="ponteiro"></div>
-        <div id="roleta-circulo-interno">GIRAR</div>
+
+    <div class="container-roleta" id="containerRoleta">
+        <div class="roleta" id="roleta"></div>
+        <div class="ponteiro"></div>
     </div>
-    <h1 id="resultado-cor">Clique para Girar!</h1>
 
     <script>
-        const roletaContainer = document.getElementById('roleta-container');
-        const roletaInterna = document.getElementById('roleta-circulo-interno');
-        const resultadoCor = document.getElementById('resultado-cor');
+        const containerRoleta = document.getElementById('containerRoleta');
+        const roleta = document.getElementById('roleta');
         const body = document.body;
 
-        const cores = ['vermelho', 'azul', 'amarelo'];
-        const angulosFim = {
-            'vermelho': 360 * 10 + 60,   // Exemplo: 10 voltas + 60 graus para cair no vermelho
-            'azul': 360 * 10 + 180,      // Exemplo: 10 voltas + 180 graus para cair no azul
-            'amarelo': 360 * 10 + 300    // Exemplo: 10 voltas + 300 graus para cair no amarelo
+        const cores = {
+            VERMELHA: 'var(--cor-vermelha)',
+            AMARELA: 'var(--cor-amarela)',
+            AZUL: 'var(--cor-azul)'
         };
 
-        roletaInterna.addEventListener('click', girarRoleta);
+        let girando = false;
+        let rotacaoAtual = 0;
 
-        function girarRoleta() {
-            if (roletaContainer.classList.contains('girando')) {
-                return; // Impede múltiplos cliques enquanto gira
-            }
+        containerRoleta.addEventListener('click', () => {
+            if (girando) return; // Se já estiver girando, não faz nada
 
-            // Remove a classe de cor de fundo anterior, se houver
-            body.classList.remove('vermelho-bg', 'azul-bg', 'amarelo-bg');
-            resultadoCor.textContent = 'GIRANDO...';
-            resultadoCor.style.color = 'white'; // Cor padrão enquanto gira
+            girando = true;
 
-            // Sorteia uma cor
-            const corSorteada = cores[Math.floor(Math.random() * cores.length)];
-            const anguloFinal = angulosFim[corSorteada] + (Math.random() * 90 - 45); // Pequena variação para não cair sempre no mesmo ponto da "fatia"
+            // Gera um ângulo aleatório para o resultado
+            const anguloAleatorio = Math.random() * 360;
+            // Adiciona várias voltas completas para o efeito de giro
+            const voltasExtras = 5 * 360; 
+            
+            rotacaoAtual += voltasExtras + anguloAleatorio;
 
-            // Aplica a rotação
-            roletaContainer.style.transition = 'transform 3s ease-out';
-            roletaContainer.style.transform = `rotate(${anguloFinal}deg)`;
+            roleta.style.transform = `rotate(${rotacaoAtual}deg)`;
 
-            // Adiciona a classe para animação de CSS (se quiser usar keyframes)
-            // roletaContainer.classList.add('girando');
-
-            // Quando a animação terminar
+            // Espera a animação terminar para definir o resultado
             setTimeout(() => {
-                // Remove a rotação e a transição para que a próxima giro comece do 0
-                roletaContainer.style.transition = 'none';
-                roletaContainer.style.transform = 'rotate(0deg)'; // Reseta visualmente para a próxima rotação
+                const anguloFinal = rotacaoAtual % 360;
+                let corSorteada;
 
-                // Adiciona a classe de cor de fundo da página
-                body.classList.add(`${corSorteada}-bg`);
-
-                // Exibe o resultado no texto
-                if (corSorteada === 'vermelho') {
-                    resultadoCor.textContent = 'VERMELHO!';
-                    resultadoCor.style.color = 'white';
-                } else if (corSorteada === 'azul') {
-                    resultadoCor.textContent = 'AZUL!';
-                    resultadoCor.style.color = 'white';
+                // O ponteiro aponta para 270 graus. Ajustamos os cálculos.
+                if (anguloFinal >= 0 && anguloFinal < 60 || anguloFinal >= 300 && anguloFinal < 360) {
+                    corSorteada = cores.AMARELA;
+                } else if (anguloFinal >= 60 && anguloFinal < 180) {
+                    corSorteada = cores.VERMELHA;
                 } else {
-                    resultadoCor.textContent = 'AMARELO!';
-                    resultadoCor.style.color = 'black';
+                    corSorteada = cores.AZUL;
                 }
-
-                // Remove a classe de animação (se usada)
-                roletaContainer.classList.remove('girando');
-
-            }, 3000); // Tempo da animação em milissegundos
-        }
+                
+                body.style.backgroundColor = corSorteada;
+                girando = false;
+            }, parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--duracao-giro')) * 1000);
+        });
     </script>
 </body>
 </html>
